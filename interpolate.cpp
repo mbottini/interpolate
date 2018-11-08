@@ -5,13 +5,17 @@ Polynomial::Polynomial(const std::vector<double> &data) {
     return;
 }
 
+// This was probably a bad idea.
+// [1, 2, 3]
+// becomes [(0, 3), (1, 2), (2, 1)]
+// which becomes lambda x : x^0*3 + x^1*2 + x^2*1
 std::function<double(double)> Polynomial::eval() const {
     return [this](double x) {
-        double sum = 0;
-        for(auto p : enumerate(reverse(this->_data))) {
-            sum += p.second * std::pow(x, p.first);
-        }
-        return sum;
+        return sum_vec(
+            map<std::pair<size_t, double>, double>(
+                [x, this](std::pair<size_t, double> p)
+                     { return p.second * std::pow(x, p.first); },
+                enumerate(reverse(this->_data))));
     };
 }
 
@@ -32,20 +36,10 @@ std::ostream& Polynomial::write(std::ostream &os) const {
 }
 
 Polynomial Polynomial::operator +(const Polynomial &other) const {
-    std::vector<double> result_vec;
-    auto it1 = _data.rbegin();
-    auto it2 = other._data.rbegin();
-
-    while(it1 != _data.rend() || it2 != other._data.rend()) {
-        result_vec.push_back(
-            (it1 != _data.rend() ? *it1 : 0) +
-            (it2 != other._data.rend() ? *it2 : 0));
-        if(it1 != _data.rend())
-            ++it1;
-        if(it2 != other._data.rend())
-            ++it2;
-    }
-    return reverse(result_vec);
+    return map<std::pair<double, double>, double>(
+        [](std::pair<double, double> p) { return p.first + p.second; },
+        zip_with_padding<double, double>(
+            reverse(_data), reverse(other._data), 0, 0));
 }
 
 
@@ -64,19 +58,13 @@ Polynomial Polynomial::operator *(const Polynomial &other) const {
 }
 
 Polynomial Polynomial::operator *(double scalar) const {
-    std::vector<double> result_vec;
-    for(auto coef : _data) {
-        result_vec.push_back(coef * scalar);
-    }
-    return result_vec;
+    return map<double, double>(
+        [scalar](double coef) { return coef * scalar; },
+        _data);
 }
 
 Polynomial operator *(double scalar, const Polynomial &poly) {
-    std::vector<double> result_vec;
-    for(auto coef : poly._data) {
-        result_vec.push_back(coef * scalar);
-    }
-    return result_vec;
+    return poly * scalar;
 }
 
 Polynomial Polynomial::operator +=(const Polynomial &other) {
@@ -119,5 +107,11 @@ Polynomial lagrange_interpolate(const std::vector<Point> p_vec) {
         result_poly += lagrange_term(plucked.first, plucked.second);
     }
     return result_poly;
+}
+
+double sum_vec(std::vector<double> v) {
+    return foldl<double, double>([](double x, double y) { return x + y; },
+                                 v,
+                                 0);
 }
 

@@ -55,6 +55,49 @@ std::pair<T, std::vector<T>> pluck(const std::vector<T> &vec, size_t index) {
     return std::pair<T, std::vector<T>>(vec.at(index), result_vec);
 }
 
+// C++ is a functional language, right?
+
+template<typename T1, typename T2>
+std::vector<T2> map(std::function<T2(T1)> f, const std::vector<T1> &vec) {
+    std::vector<T2> result_vec;
+    for(auto &v : vec) {
+        result_vec.push_back(f(v));
+    }
+    return result_vec;
+}
+
+template<typename T1, typename T2>
+T2 foldl(std::function<T2(T2, T1)> f, const std::vector<T1> &vec, T2 acc) {
+    for(auto &v : vec) {
+        acc = f(acc, v);
+    }
+    return acc;
+}
+
+double sum_vec(std::vector<double> v);
+
+template<typename T1, typename T2>
+std::vector<std::pair<T1, T2>> zip_with_padding(const std::vector<T1> &v1,
+                                                const std::vector<T2> &v2,
+                                                T1 def1,
+                                                T2 def2) {
+    std::vector<std::pair<T1, T2>> result_vec;
+    auto it1 = v1.begin();
+    auto it2 = v2.begin();
+    while(it1 != v1.end() || it2 != v2.end()) {
+        result_vec.emplace_back(
+            (it1 != v1.end() ? *it1 : def1),
+            (it2 != v2.end() ? *it2 : def2));
+        if(it1 != v1.end()) {
+            ++it1;
+        }
+        if(it2 != v2.end()) {
+            ++it2;
+        }
+    }
+
+    return result_vec;
+}
 
 // Lagrange interpolation stuff
 
