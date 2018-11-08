@@ -51,7 +51,7 @@ Polynomial Polynomial::operator +(const Polynomial &other) const {
 
 Polynomial Polynomial::operator *(const Polynomial &other) const {
     std::vector<double> result_vec;
-    for(int i = 0; i < _data.size() + other._data.size() - 1; i++) {
+    for(size_t i = 0; i < _data.size() + other._data.size() - 1; i++) {
         result_vec.push_back(0);
     }
 

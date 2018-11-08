@@ -55,6 +55,9 @@ std::pair<T, std::vector<T>> pluck(const std::vector<T> &vec, size_t index) {
     return std::pair<T, std::vector<T>>(vec.at(index), result_vec);
 }
 
+
+// Lagrange interpolation stuff
+
 typedef struct {
     int x;
     int y;
