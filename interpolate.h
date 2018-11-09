@@ -101,11 +101,16 @@ std::vector<std::pair<T1, T2>> zip_with_padding(const std::vector<T1> &v1,
 
 // Lagrange interpolation stuff
 
-typedef struct {
-    int x;
-    int y;
-} Point;
+class myPoint {
+    public:
+        int x;
+        int y;
+        myPoint(int x, int y);
+};
 
-Polynomial lagrange_term(const Point &source, const std::vector<Point> &rest);
-Polynomial lagrange_interpolate(const std::vector<Point> p_vec);
+Polynomial lagrange_term(const myPoint &source, const std::vector<myPoint> &rest);
+Polynomial lagrange_interpolate(const std::vector<myPoint> p_vec);
+
+
 #endif
+

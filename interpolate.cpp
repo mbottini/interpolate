@@ -5,17 +5,14 @@ Polynomial::Polynomial(const std::vector<double> &data) {
     return;
 }
 
-// This was probably a bad idea.
-// [1, 2, 3]
-// becomes [(0, 3), (1, 2), (2, 1)]
-// which becomes lambda x : x^0*3 + x^1*2 + x^2*1
 std::function<double(double)> Polynomial::eval() const {
-    return [this](double x) {
-        return sum_vec(
-            map<std::pair<size_t, double>, double>(
-                [x, this](std::pair<size_t, double> p)
-                     { return p.second * std::pow(x, p.first); },
-                enumerate(reverse(this->_data))));
+    std::vector<double> cap_vec = _data;
+    return [cap_vec](double x) {
+        double sum = 0;
+        for(auto p : enumerate(reverse(cap_vec))) {
+            sum += pow(x, p.first) * p.second;
+        }
+        return sum;
     };
 }
 
@@ -36,10 +33,10 @@ std::ostream& Polynomial::write(std::ostream &os) const {
 }
 
 Polynomial Polynomial::operator +(const Polynomial &other) const {
-    return map<std::pair<double, double>, double>(
+    return reverse(map<std::pair<double, double>, double>(
         [](std::pair<double, double> p) { return p.first + p.second; },
         zip_with_padding<double, double>(
-            reverse(_data), reverse(other._data), 0, 0));
+            reverse(_data), reverse(other._data), 0, 0)));
 }
 
 
@@ -89,7 +86,7 @@ std::ostream &operator<<(std::ostream &os, const Polynomial &p) {
     return p.write(os);
 }
 
-Polynomial lagrange_term(const Point &source, const std::vector<Point> &rest) {
+Polynomial lagrange_term(const myPoint &source, const std::vector<myPoint> &rest) {
     double divisor = 1;
     Polynomial result_poly({1});
     for(auto p : rest) {
@@ -100,7 +97,7 @@ Polynomial lagrange_term(const Point &source, const std::vector<Point> &rest) {
     return result_poly * (source.y / divisor);
 }
 
-Polynomial lagrange_interpolate(const std::vector<Point> p_vec) {
+Polynomial lagrange_interpolate(const std::vector<myPoint> p_vec) {
     Polynomial result_poly({0});
     for(size_t i = 0; i < p_vec.size(); i++) {
         auto plucked = pluck(p_vec, i);
@@ -113,5 +110,10 @@ double sum_vec(std::vector<double> v) {
     return foldl<double, double>([](double x, double y) { return x + y; },
                                  v,
                                  0);
+}
+
+myPoint::myPoint(int x, int y) {
+    this->x = x;
+    this->y = y;
 }
 
