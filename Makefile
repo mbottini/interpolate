@@ -1,6 +1,6 @@
 CXX=g++
 CC=gcc
-CXXFLAGS=--std=c++11 -Wall 
+CXXFLAGS=--std=c++17 -Wall 
 LIBRARIES=-lm -lX11
 
 

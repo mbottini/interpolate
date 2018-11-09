@@ -6,10 +6,9 @@ Polynomial::Polynomial(const std::vector<double> &data) {
 }
 
 std::function<double(double)> Polynomial::eval() const {
-    std::vector<double> cap_vec = _data;
-    return [cap_vec](double x) {
+    return [*this](double x) {
         double sum = 0;
-        for(auto p : enumerate(reverse(cap_vec))) {
+        for(auto p : enumerate(reverse(this->_data))) {
             sum += pow(x, p.first) * p.second;
         }
         return sum;

@@ -73,16 +73,19 @@ int main()
 
    G_rgb(1,0,0) ;
 
+   // Await clicking of the points.
    for(int i = 0; i < num_points; i++) {
       myPoint next_point = G_wait_point();
       point_vec.push_back(next_point);
       G_fill_circle(next_point.x, next_point.y, 2);
    }
 
-   Polynomial result_poly = lagrange_interpolate(point_vec);
+   // Generate the function from the interpolation of the points.
+   std::function<double(double)> f = lagrange_interpolate(point_vec).eval();
 
-   std::function<double(double)> f = result_poly.eval();
-
+   // And draw lines connecting each point in the function.
+   // We draw lines in case the person picked some wonky-ass points
+   // and would end up with a super steep pattern.
    G_rgb(0.0,1.0,0.0) ;
    myPoint prev_point = myPoint(0, f(0));
    myPoint next_point = myPoint(0, 0);
