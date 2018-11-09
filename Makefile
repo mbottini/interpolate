@@ -18,3 +18,4 @@ interpolate.o: interpolate.cpp
 clean:
 	rm -f *.o
 	rm -f a.out
+	rm -f *.xwd
